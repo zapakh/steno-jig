@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Steno Jig</title>
+	<link href="style.css" rel="stylesheet" type="text/css">
+	<script src="type-jig.js"></script>
+	<script src="util.js"></script>
+	<script src="word-drill.js"></script>
+	<script src="number-sentences.js"></script>
+	<script src="steno-display.js"></script>
+	<script src="idk-sets.js"></script>
+	<script src="plover-translations.js"></script>
+	<link rel="stylesheet" type="text/css" href="font-roboto.css">
+</head>
+<body>
+
+<div id="form" class="wrapper">
+	<h1>Choose a drill...</h1>
+
+	<div class="form-section">
+		<div class="caption"><strong>Settings</strong> that apply to all drills</div><br>
+
+		<div name="hints">
+			<label><input id="hints" type="checkbox" name="hints" value="1" checked>Show hints</label>
+		</div><br>
+
+		<div name="speed">
+			<label><input id="wpm" type="number" name="wpm" value="" step="5"> Speed (words per minute)
+				(or <input type="checkbox" id="cpm" value="1"> x5 chars per minute) </label>
+		</div>
+	</div>
+
+
+	<div class="form-section">
+		<div class="caption">Nominative personal <strong>pronouns</strong> (once, in random order)</div>
+
+		<form class="drill-options" action="idkform.html">
+			<input type="hidden" name="drill" value="pronouns">
+			<input type="hidden" name="type" value="shuffled">
+			<input type="hidden" name="wpm" value="">
+			<input type="hidden" name="cpm" value="">
+			<input type="hidden" name="hints" value="">
+
+			<br>
+
+			<button>Start Drill &rarr;</button>
+		</form>
+	</div>
+
+<div id="lesson" class="wrapper" style="display: none">
+	<h3 id="lesson-name" class="center"></h3>
+	<div id="drill-content">
+		<div id="answer"></div>
+		<div id="exercise"></div>
+		<div id="results"></div>
+	</div>
+
+	<div id="nav">
+		<p id="strokes"></p>
+		<p id="clock" class="clock"></p>
+
+		<p class="center"><a id="back" title="LeftArrow">&larr; Back to Menu <span class="shortcutkey">(LeftArrow)</span></a></p>
+		<p class="center"><a id="again" title="Enter">&#8634; Restart <span class="shortcutkey">(Enter)</span></a></p>
+	</div>
+
+	<textarea id="input"></textarea>
+</div>
+
+<script>
+function runExercise(fields) {
+	if(fields.drill === 'NumberSentences') exercise = numberSentences(fields);
+	else {
+		if(Array.isArray(fields.drill)) {
+			TypeJig.WordSets.custom = fields.drill;
+			fields.drill = 'custom';
+		}
+		exercise = wordDrill(fields);
+	}
+	if(exercise) {
+		if(fields.hints) {
+			var strokes = document.getElementById('strokes');
+			if(fields.floating_hints) {
+				strokes.style.position = 'fixed';
+			}
+			var translations = TypeJig.shortestTranslations(TypeJig.Translations.Plover);
+			var hints = new StenoDisplay(strokes, translations, true);
+		}
+		var speed = {wpm: fields.wpm, cpm: fields.cpm};
+
+		display_only('lesson');
+		var jig = setExercise(exercise.name, exercise, hints, speed);
+	}
+}
+
+function getSettings() {
+	var wpm = document.getElementById('wpm');
+	var cpm = document.getElementById('cpm');
+	var hints = document.getElementById('hints');
+	if(cpm.checked) this.elements.cpm.value = 5 * wpm.value;
+	else this.elements.wpm.value = wpm.value;
+	this.elements.hints.value = hints.checked ? hints.value : '';
+}
+
+window.onload = function() {
+	if(document.location.search !== '') {
+		runExercise(parseQueryString(document.location.search));
+	} else {
+		// Add event listeners to get settings before submitting.
+		var forms = document.querySelectorAll('form');
+		for(var i=0; i<forms.length; ++i) {
+			var form = forms[i]
+			if(form.id === 'custom') {
+				form.addEventListener('submit', function(evt) {
+					evt.preventDefault();
+					getSettings.call(this);
+					var fields = getFormFields(this);
+					fields.drill = fields.drill.split(/\s+/m);
+					runExercise(fields);
+				})
+			} else {
+				form.addEventListener('submit', getSettings);
+			}
+		}
+	}
+}
+
+function display_only(show) {
+	var i, tabs
+	tabs = ['form', 'lesson']
+	for (i in tabs) {
+		document.getElementById(tabs[i]).style.display = tabs[i] === show ? 'block' : 'none'
+	}
+}
+
+setTheme()
+</script>
+
+</body>
+</html>

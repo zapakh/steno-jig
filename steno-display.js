@@ -29,7 +29,16 @@ StenoDisplay.prototype.update = function(text, x, y) {
 	text = text || '';
 	if(text !== this.lastText) {
 		this.lastText = text;
-		var strokes = this.lookup(text);
+        	var words = text.split(" ")
+		var strokes = this.lookup(words.join(" "));
+		while (!strokes && words.length) {
+			strokes = this.lookup(
+			    [words[0].toLowerCase()].concat(words.slice(1)).join(" "));
+			if (!strokes) {
+				words.pop();
+				strokes = this.lookup(words.join(" "));
+			}
+		}
 		this.set(strokes, this.showEmpty);
 		if(this.errorLog && !strokes) {
 			this.errorLog.innerHTML += 'No strokes for: ' + text + '<br>';

@@ -57,7 +57,7 @@ TypeJig.prototype.reset = function() {
 	}
 
 	if(this.hint && this.hint.update) {
-		var word = (this.display.textContent.match(/^\S+/) || [''])[0];
+		var word = (this.display.textContent.match(/^(?:\S+\s+){0,5}\S+/) || [''])[0];
 		var rect = this.display.getBoundingClientRect();
 		this.hint.update(word, rect.left, rect.top);
 	}
@@ -152,6 +152,11 @@ function nextWord(words) {
 	return word;
 }
 
+function nextWords(words) {
+	var word = words.slice(0, 12).join('').trim()
+	return word;
+}
+
 TypeJig.prototype.answerChanged = function() {
 	delete this.pendingChange;
 	if(!this.running && !!this.input.value.trim()) {
@@ -220,7 +225,7 @@ TypeJig.prototype.answerChanged = function() {
 	}
 	this.updateCursor(output);
 
-	if(match) ex = nextWord(exercise, range);
+	if(match) ex = nextWords(exercise, range);
 	var r = range.getBoundingClientRect();
 
 	if(this.hint && this.hint.update) {
