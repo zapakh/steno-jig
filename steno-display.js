@@ -174,19 +174,19 @@ StenoDisplay.Stroke = function(container) {
 	this.keys.appendChild(upper);
 	this.keys.appendChild(lower);
 	this.keys.appendChild(vowel);
-	var upperKeys = ['S', 'T', 'P', 'H', '*', 'F', 'P', 'L', 'T', 'D'];
-	var lowerKeys =      ['K', 'W', 'R',      'R', 'B', 'G', 'S', 'Z'];
+	var upperKeys = ['!', 'T', 'P', 'H', '*', 'F', 'P', 'L', 'T', 'D'];
+	var lowerKeys = ['S', 'K', 'W', 'R',      'R', 'B', 'G', 'S', 'Z'];
 	var vowelKeys = ['', 'A', 'O', '', 'E', 'U'];
 	var upperCells = addCells(upper, upperKeys);
 	var lowerCells = addCells(lower, lowerKeys);
 	var vowelCells = addCells(vowel, vowelKeys);
 
-	upperCells[0].rowSpan = 2;
+//	upperCells[0].rowSpan = 2;
 	upperCells[4].rowSpan = 2;
 
 	upperCells[4].className = 'alt wide';
 	upperCells[9].className = 'alt';
-	lowerCells[7].className = 'alt';
+	lowerCells[8].className = 'alt';
 
 	vowelCells[0].colSpan = 2;
 	vowelCells[1].className = 'leftVowel';
@@ -198,12 +198,13 @@ StenoDisplay.Stroke = function(container) {
 
 	this.leftCells = {
 		'#': numCell,
-		S: upperCells[0], T: upperCells[1], P: upperCells[2], H: upperCells[3],
-		                  K: lowerCells[0], W: lowerCells[1], R: lowerCells[2]
+                '!': upperCells[0],
+		S: lowerCells[0], T: upperCells[1], P: upperCells[2], H: upperCells[3],
+		                  K: lowerCells[1], W: lowerCells[2], R: lowerCells[3]
 	};
 	this.rightCells = {
 		'*': upperCells[4], F: upperCells[5], P: upperCells[6], L: upperCells[7], T: upperCells[8], D: upperCells[9],
-		R: lowerCells[3], B: lowerCells[4], G: lowerCells[5], S: lowerCells[6], Z: lowerCells[7]
+		R: lowerCells[4], B: lowerCells[5], G: lowerCells[6], S: lowerCells[7], Z: lowerCells[8]
 	};
 	this.vowelCells = {
 		A: vowelCells[1], O: vowelCells[2], '*': upperCells[4], E: vowelCells[4], U: vowelCells[5]
